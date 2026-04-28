@@ -12,7 +12,6 @@ import CircularProgress from "@mui/material/CircularProgress";
 // mui icons
 import CheckIcon from "@mui/icons-material/Check";
 import SportsTennisIcon from "@mui/icons-material/SportsTennis";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 interface FormErrors {
   firstName?: string;
