@@ -1,0 +1,15 @@
+.headerWebsite {
+  height: 400px;
+  /* background-image: url("/webImages/pexels-markusspiske-114296.jpg"); */
+  background:
+    linear-gradient(to right, #2f2f30c3, #3232325f),
+    url("/webImages/pexels-markusspiske-114296.jpg");
+  background-size: cover;
+  background-position: left center;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  padding-left: 20px;
+}
