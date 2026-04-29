@@ -94,6 +94,8 @@ export default function LoginPage() {
         });
         if (response.data.roleName == "Player") {
           router.push("website");
+        } else {
+          router.push("Home");
         }
       }
     } catch (error) {
