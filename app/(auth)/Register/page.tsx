@@ -25,7 +25,6 @@ interface FormErrors {
 
 export default function Register() {
   const back_end_url = process.env.NEXT_PUBLIC_BACK_END_URL;
-
   const register_path = process.env.NEXT_PUBLIC_REGISTER_PATH;
   // route
   const useroute = useRouter();

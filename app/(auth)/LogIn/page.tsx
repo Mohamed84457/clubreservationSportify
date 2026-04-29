@@ -1,19 +1,54 @@
 "use client";
 
+// mui
+import Snackbar, { SnackbarCloseReason } from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import CircularProgress from "@mui/material/CircularProgress";
+
 import Link from "next/link";
-import { FormEvent, useState } from "react";
+import { FormEvent, SyntheticEvent, useState } from "react";
 import { PasswordInput } from "@/app/components/auth/AuthInput";
 import AuthInput from "@/app/components/auth/AuthInput";
 import SocialButton from "@/app/components/auth/SocialButton";
-//mui
-import CircularProgress from "@mui/material/CircularProgress";
+
 import axios from "axios";
+import { useRouter } from "next/navigation";
+import Cookies from "universal-cookie";
 
 interface FormErrors {
   email?: string;
   password?: string;
 }
 export default function LoginPage() {
+  const back_end_url = process.env.NEXT_PUBLIC_BACK_END_URL;
+  const login_path = process.env.NEXT_PUBLIC_LOGIN_PATH;
+  // router
+  const router = useRouter();
+  //cppkie
+  const Cookie = new Cookies();
+  // snackbar
+  const [open, setOpen] = useState<{
+    open: boolean;
+    message: string;
+    type: "success" | "error" | "warning" | "info";
+  }>({
+    open: false,
+    message: "",
+    type: "success",
+  });
+  const handleSnackbarClose = (
+    event: SyntheticEvent | Event,
+    reason?: SnackbarCloseReason,
+  ) => {
+    if (reason === "clickaway") return;
+
+    setOpen((prev) => ({ ...prev, open: false }));
+  };
+
+  const handleAlertClose = (event: SyntheticEvent) => {
+    setOpen((prev) => ({ ...prev, open: false }));
+  };
+
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -41,16 +76,50 @@ export default function LoginPage() {
     setIsLoading(true);
     // TODO: integrate your auth logic here
     try {
-      const response = await axios.post(
-        "http://m-sportify.runasp.net/api/Auth/login",
-        {
-          email: email,
-          password: password,
-        },
-      );
-      
+      const response = await axios.post(`${back_end_url}${login_path}`, {
+        email: email,
+        password: password,
+      });
+      console.log(response);
+      if (response.status === 200) {
+        Cookie.set("sportifyaccesstoken", response.data.accessToken, {
+          path: "/",
+          sameSite: "lax",
+          secure: process.env.NODE_ENV === "production",
+        });
+        Cookie.set("sportifyrefreshtoken", response.data.refreshToken, {
+          path: "/",
+          sameSite: "lax",
+          secure: process.env.NODE_ENV === "production",
+        });
+        if (response.data.roleName == "Player") {
+          router.push("website");
+        }
+      }
     } catch (error) {
-      console.log(error);
+      if (axios.isAxiosError(error)) {
+        const errors = error.response?.data?.errors;
+
+        if (error.response?.status === 401) {
+          setOpen({
+            open: true,
+            message: "Email or password is incorrect",
+            type: "error",
+          });
+        } else if (error.response?.data?.errors) {
+          const errors = error.response?.data?.errors as Record<
+            string,
+            string[]
+          >;
+          const message = Object.values(errors)[0]?.[0] || "Validation error";
+
+          setOpen({
+            open: true,
+            message,
+            type: "error",
+          });
+        }
+      }
     } finally {
       await new Promise((r) => setTimeout(r, 1200));
       setIsLoading(false);
@@ -161,23 +230,34 @@ export default function LoginPage() {
                   />
                 </div>
 
-                {/* Remember me */}
-                <label className="flex items-center gap-3 px-1 cursor-pointer select-none group">
-                  <input
-                    type="checkbox"
-                    id="remember"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    className="w-5 h-5 rounded border-outline-variant bg-surface-container-high text-primary-container focus:ring-primary focus:ring-offset-background cursor-pointer accent-primary"
-                  />
-                  <span
-                    className="text-on-surface-variant group-hover:text-on-surface transition-colors"
-                    style={{ fontSize: "14px" }}
-                  >
-                    Remember me
-                  </span>
-                </label>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 ">
+                  {/* Remember me */}
+                  <label className="flex items-center gap-3 px-1 cursor-pointer select-none group">
+                    <input
+                      type="checkbox"
+                      id="remember"
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
+                      className="w-5 h-5 rounded border-outline-variant bg-surface-container-high text-primary-container focus:ring-primary focus:ring-offset-background cursor-pointer accent-primary"
+                    />
+                    <span
+                      className="text-on-surface-variant group-hover:text-on-surface transition-colors"
+                      style={{ fontSize: "14px" }}
+                    >
+                      Remember me
+                    </span>
+                  </label>
+                  {/* forget password */}
 
+                  <div className="text-center sm:text-right ">
+                    <Link
+                      href={"/forget-password"}
+                      className="text-primary hover:underline decoration-primary/40 underline-offset-4 text-blue-800"
+                    >
+                      Forgot password?
+                    </Link>
+                  </div>
+                </div>
                 {/* Submit */}
                 <button
                   type="submit"
@@ -224,9 +304,8 @@ export default function LoginPage() {
               </div>
 
               {/* Social */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <SocialButton provider="google" />
-                <SocialButton provider="facebook" />
               </div>
 
               {/* Footer */}
@@ -245,6 +324,21 @@ export default function LoginPage() {
           </div>
         </div>
       </main>
+
+      <Snackbar
+        open={open.open}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert
+          onClose={handleAlertClose}
+          severity={open.type}
+          variant="filled"
+          sx={{ width: "90%", margin: "auto" }}
+        >
+          {open.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

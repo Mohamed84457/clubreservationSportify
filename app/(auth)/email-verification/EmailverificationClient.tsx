@@ -18,21 +18,7 @@ export default function Emailverification() {
 
     const verifyEmail = async () => {
 
-      // try {
-      //   const response = await axios.post(
-      //     `${back_end_url}${emailVerification_path}`,
-      //     {
-      //       email,
-      //       token,
-      //     }
-      //   );
-
-      //   console.log(response.data);
-      //   setStatus("Email verified successfully ✅");
-      // } catch (error) {
-      //   console.log(error);
-      //   setStatus("Verification failed ❌");
-      // }
+      
       const response = await fetch(`${back_end_url}${emailVerification_path}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
