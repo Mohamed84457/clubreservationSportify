@@ -80,7 +80,7 @@ export default function ResetPassword() {
       setSuccess(true);
 
       setTimeout(() => {
-        router.push("/login");
+        router.push("/LogIn");
       }, 1500);
     } catch (err) {
       setErrors({ password: "Failed to reset password. Try again." });
