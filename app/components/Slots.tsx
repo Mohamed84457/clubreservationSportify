@@ -58,7 +58,6 @@ export default function Slots({
   // handel click confirm button
   const handleconfirmselection = (type: string) => {
     console.log("reservation", {
-      
       Date: selecteddate,
       state: type,
       StartTime: mintimeampm,
@@ -67,7 +66,6 @@ export default function Slots({
   };
   // Mock API
   const apiData: ApiResponse = {
-    date: "2026-03-20",
     openingHours: { start: "10:00", end: "23:00" },
     slotDuration: 30,
     reservations: [
@@ -75,25 +73,21 @@ export default function Slots({
         id: "1",
         startTime: "10:00",
         endTime: "11:30",
-        state: "Maintained",
-        courtId: 1,
-        name: "medo",
-        phoneNUmber: "0129738",
+        status: "Maintained",
+        playerName: "medo",
       },
       {
         id: "2",
         startTime: "15:00",
         endTime: "16:00",
-        state: "Booked",
-        courtId: 1,
-        name: "medo",
-        phoneNUmber: "0129738",
+        status: "Booked",
+        playerName: "medo",
       },
     ],
   };
 
   const slots = buildSlots(apiData);
-  
+
   return (
     <div className="min-h-screen p-4 md:p-8 max-w-5xl mx-auto">
       {/* Header */}
@@ -175,9 +169,7 @@ export default function Slots({
                 onClick={() => {
                   handleconfirmselection("booking");
                 }}
-                disabled={
-                    !selecteddate || selectedSlot.length === 0
-                }
+                disabled={!selecteddate || selectedSlot.length === 0}
                 className="flex-1 md:flex-none 
           bg-green-500 hover:bg-green-600 
           disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed
