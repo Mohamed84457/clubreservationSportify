@@ -1,20 +1,22 @@
+"use client";
 // icons mui
+import { Ireservationdetails } from "@/app/utils/interfaces";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Link from "next/link";
-export default async function Res({ params }: { params: { res: string } }) {
-  const { res } = await params;
+import { useLayoutEffect, useState } from "react";
 
+export default function Res({ params }: { params: { res: string } }) {
+  const [reservationdetails, setReservationdetails] = useState<Ireservationdetails|null>();
+  const [res, setRes] = useState("");
+  useLayoutEffect(() => {
+    const getResevationId = async () => {
+      const { res } = await Promise.resolve(params);
+      setRes(res);
+    };
+    getResevationId();
+  }, []);
   const reservationId = res;
-
-  const fakereservationdetails = {
-    id: reservationId,
-    startTime: "10:00",
-    endTime: "11:30",
-    state: "Maintained",
-    courtId: 1,
-    name: "medo",
-    phoneNumber: "012978723",
-  };
+  
   // handle delete & edit reservation
   return (
     <div className="min-h-screen  flex flex-col  justify-start items-start gap-5 p-6 bg-gradient-to-br from-gray-100 via-white to-gray-200">
@@ -41,38 +43,40 @@ export default async function Res({ params }: { params: { res: string } }) {
         <div className="grid grid-cols-1 gap-4 text-sm md:grid-cols-2">
           <div>
             <p className="text-gray-500">Start Time</p>
-            <p className="font-medium">{fakereservationdetails.startTime}</p>
+            <p className="font-medium">{reservationdetails?.startTime}</p>
           </div>
 
           <div>
             <p className="text-gray-500">End Time</p>
-            <p className="font-medium">{fakereservationdetails.endTime}</p>
+            <p className="font-medium">{reservationdetails?.endTime}</p>
           </div>
 
           <div>
             <p className="text-gray-500">State</p>
             <p className="font-medium text-green-600">
-              {fakereservationdetails.state}
+              {reservationdetails?.status}
             </p>
           </div>
 
           <div>
-            <p className="text-gray-500">Court ID</p>
-            <p className="font-medium">{fakereservationdetails.courtId}</p>
+            <p className="text-gray-500">user email</p>
+            <p className="font-medium">{reservationdetails?.userEmail}</p>
           </div>
 
           <div>
             <p className="text-gray-500">Name</p>
-            <p className="font-medium">{fakereservationdetails.name}</p>
+            <p className="font-medium">{reservationdetails?.userFullName}</p>
           </div>
 
           <div>
             <p className="text-gray-500">Phone</p>
-            <p className="font-medium">{fakereservationdetails.phoneNumber}</p>
+            <p className="font-medium">
+              {reservationdetails?.userPhoneNumber}
+            </p>
           </div>
           <div>
             <p className="text-gray-500">payment state</p>
-            <p className="font-medium">pending</p>
+            <p className="font-medium text-green-500">payed</p>
           </div>
           {/* Actions */}
           <div className="flex flex-col md:flex-row gap-4 pt-4 border-t">

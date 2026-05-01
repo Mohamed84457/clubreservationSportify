@@ -138,7 +138,7 @@ export default function Slots({
         </div>
       )}
       {/* Bottom Sticky Summary */}
-      <div className="sticky bottom-4 z-50">
+      <div className="sticky bottom-4 z-30">
         <div
           className="bg-zinc-800/90 backdrop-blur-lg border border-zinc-700 
   rounded-2xl p-4 shadow-xl"

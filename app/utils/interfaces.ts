@@ -12,16 +12,13 @@ export interface Ireservation {
   id: string;
   startTime: string;
   endTime: string;
-  state: string;
-  courtId: number;
-  name: string;
-  phoneNUmber: string;
+  status: string;
+  playerName: string;
 }
 
 // the response from the backend for the resevations of specific day
 
 export interface ApiResponse {
-  date: string;
   openingHours: {
     start: string;
     end: string;
@@ -36,22 +33,33 @@ export interface Inavigation {
   directory: string;
 }
 
-
-
 // total bookings
-export interface ItotalBookings{
-  numberofbookings:number;
-  istrendup:boolean;
-  trendpersent:number;
+export interface ItotalBookings {
+  numberofbookings: number;
+  istrendup: boolean;
+  trendpersent: number;
 }
 //  monthly spend
-export interface Imonthlyspend{
-  monthlyspend:number;
-  istrendup:boolean;
-  trendpersent:number;
+export interface Imonthlyspend {
+  monthlyspend: number;
+  istrendup: boolean;
+  trendpersent: number;
 }
 //   cancellations
-export interface Icancellations{
-  numbercancellations:number;
-  numbercancellationslastmonth:number
+export interface Icancellations {
+  numbercancellations: number;
+  numbercancellationslastmonth: number;
+}
+
+// spesific reservation details
+export interface Ireservationdetails {
+  reservationId: string;
+  startTime: string;
+  endTime: string;
+  status: string;
+  userId: string;
+  userFullName: string;
+  userEmail: string;
+  userPhoneNumber: string;
+  maintenanceNote: string;
 }

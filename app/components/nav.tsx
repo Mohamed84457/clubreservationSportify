@@ -1,45 +1,49 @@
-"use client"
-import Link from "next/link";
-// interfaces
-import { Inavigation } from "../utils/interfaces";
+"use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
 
 export default function Navigation() {
-  // pathname to highlight page
   const pathname = usePathname();
-  // navigations
-  const navigation: Inavigation[] = [
-    {
-      label: "Home",
-      directory: "/Home",
-    },
-    {
-      label: "Bookings",
-      directory: "/Home/bookings",
-    },
-    {
-      label: "Venues",
-      directory: "/Home/venues",
-    },
+
+  const navigation = [
+    { label: "Home", directory: "/Home" },
+    { label: "Users", directory: "/Home/users" },
+    { label: "Today Bookings", directory: "/Home/bookings/today" },
+    { label: "Bookings", directory: "/Home/bookings" },
+    { label: "Venues", directory: "/Home/venues" },
   ];
 
   return (
-    <nav className="flex items-center justify-around w-full h-full  p-4 rounded-xl">
-      {navigation.map((item) => (
-        <Link
-          key={item.directory}
-          href={item.directory}
-          className={`text-gray-900 hover:text-gray-700 transition duration-200 font-medium ${
-            pathname === item.directory
-              ? "text-green-400"
-              : "text-gray-300 hover:text-gray-700"
-          }`}
-        >
-          {item.label}
-          <hr />
-        </Link>
-      ))}
+    <nav className="flex items-center justify-around w-full p-4 rounded-xl  ">
+      {navigation.map((item) => {
+        const isActive = pathname === item.directory;
+
+        return (
+          <Link
+            key={item.directory}
+            href={item.directory}
+            className="relative px-3 py-2 font-medium transition "
+          >
+            <span
+              className={`${
+                isActive ? "text-green-400" : "text-black"
+              } hover:text-gray-500`}
+            >
+              {item.label}
+            </span>
+
+            {/* Animated underline */}
+            {isActive && (
+              <motion.div
+                layoutId="underline"
+                className="absolute left-0 bottom-0 h-[2px] w-full bg-green-400 rounded"
+              />
+            )}
+          </Link>
+        );
+      })}
     </nav>
   );
 }

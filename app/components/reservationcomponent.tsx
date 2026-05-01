@@ -10,10 +10,8 @@ export default function ReservationComponent({
   id,
   startTime,
   endTime,
-  courtId,
-  state,
-  name,
-  phoneNUmber,
+  status,
+  playerName,
   onClick,
 }: Ipropsreservation) {
   const startMinutes = timeToMinutes(startTime);
@@ -39,7 +37,7 @@ export default function ReservationComponent({
     endm,
   ).padStart(2, "0")}`;
 
-  const isBooked = state?.toLowerCase() === "booked";
+  const isBooked = status?.toLowerCase() === "confirmed";
 
   return (
     <div
@@ -50,14 +48,14 @@ export default function ReservationComponent({
     >
       {/* Top Row */}
       <div className="flex justify-between items-center mb-3">
-        <h2 className="font-semibold text-gray-800">Court #{courtId}</h2>
+        <h2 className="font-semibold text-gray-800">Court #</h2>
 
         <span
           className={`px-3 py-1 text-sm rounded-full font-medium ${
             isBooked ? "bg-green-100 text-green-600" : "bg-red-100 text-red-500"
           }`}
         >
-          {state}
+          {isBooked ? "Booked" : "maintenance"}
         </span>
       </div>
 
@@ -65,7 +63,7 @@ export default function ReservationComponent({
       <div className="flex items-center gap-2 text-gray-700 mb-2">
         ⏰
         <span className="font-medium">
-          {finalstartTime} {startPeriod}  -  {finalendTime} {endPeriod}
+          {finalstartTime} {startPeriod} - {finalendTime} {endPeriod}
         </span>
       </div>
 
@@ -76,10 +74,7 @@ export default function ReservationComponent({
       {isBooked ? (
         <div className="space-y-1 text-gray-700">
           <p>
-            👤 <span className="font-medium">{name}</span>
-          </p>
-          <p>
-            📞 <span className="font-medium">{phoneNUmber}</span>
+            👤 <span className="font-medium">{playerName}</span>
           </p>
         </div>
       ) : (

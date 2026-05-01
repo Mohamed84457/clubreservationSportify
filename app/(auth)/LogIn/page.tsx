@@ -212,13 +212,6 @@ export default function LoginPage() {
                     >
                       Password
                     </label>
-                    <Link
-                      href="/forgot-password"
-                      className="text-primary hover:underline decoration-primary/40 underline-offset-4"
-                      style={{ fontSize: "14px" }}
-                    >
-                      Forgot password?
-                    </Link>
                   </div>
                   <PasswordInput
                     id="password"
