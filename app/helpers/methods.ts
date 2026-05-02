@@ -65,13 +65,15 @@ export function isSlotBooked(slot: string, reservations: Ireservation[], duratio
 
 
 // extract date from timestamp
-export function getDateFromTimestamp(timestamp: string): string {
+export function getDateFromTimestamp(timestamp: string|undefined): string {
+  if (!timestamp) return "";
   return timestamp.split("T")[0];
 }
 
 
 // extravt time from timestamp
-export function getTimeFromTimestamp(timestamp: string): string {
+export function getTimeFromTimestamp(timestamp: string|undefined): string {
+  if (!timestamp) return "";
   const timePart = timestamp.split("T")[1];
   return timePart.slice(0, 5); // HH:mm
 }

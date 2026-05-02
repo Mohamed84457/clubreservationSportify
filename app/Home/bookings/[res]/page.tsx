@@ -1,93 +1,203 @@
 "use client";
-// icons mui
+
 import { Ireservationdetails } from "@/app/utils/interfaces";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import PersonIcon from "@mui/icons-material/Person";
+import PhoneIcon from "@mui/icons-material/Phone";
+import EmailIcon from "@mui/icons-material/Email";
+import axios, { AxiosError } from "axios";
 import Link from "next/link";
-import { useLayoutEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { use, useEffect, useState } from "react";
+import Cookies from "universal-cookie";
 
-export default function Res({ params }: { params: { res: string } }) {
-  const [reservationdetails, setReservationdetails] = useState<Ireservationdetails|null>();
-  const [res, setRes] = useState("");
-  useLayoutEffect(() => {
-    const getResevationId = async () => {
-      const { res } = await Promise.resolve(params);
-      setRes(res);
+// helpers
+import {
+  getTimeFromTimestamp,
+  timeToMinutes,
+  minutesToAmPm,
+} from "@/app/helpers/methods";
+
+interface IRes {
+  params: Promise<{ res: string }>;
+}
+
+export default function Res({ params }: IRes) {
+  const [loading, setLoading] = useState(true);
+  const { res } = use(params);
+
+  const Cookie = new Cookies();
+  const router = useRouter();
+
+  const [reservationdetails, setReservationdetails] =
+    useState<Ireservationdetails | null>(null);
+
+  const startTime = reservationdetails?.startTime
+    ? minutesToAmPm(
+        timeToMinutes(getTimeFromTimestamp(reservationdetails.startTime))
+      )
+    : "--";
+
+  const endTime = reservationdetails?.endTime
+    ? minutesToAmPm(
+        timeToMinutes(getTimeFromTimestamp(reservationdetails.endTime))
+      )
+    : "--";
+
+  useEffect(() => {
+    const accessToken = Cookie.get("sportifyaccesstoken");
+
+    if (!accessToken) {
+      router.push("/LogIn");
+      return;
+    }
+
+    const getReservationDetails = async () => {
+      try {
+        const response = await axios.get(
+          `http://m-sportify.runasp.net/api/admin/reservations/${res}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+
+        setReservationdetails(response.data);
+        setLoading(false);
+      } catch (error: unknown) {
+        const err = error as AxiosError;
+
+        if (err?.response?.status === 401) {
+          router.replace("/LogIn");
+        } else {
+          router.replace("/Home/bookings");
+        }
+      }
     };
-    getResevationId();
-  }, []);
-  const reservationId = res;
-  
-  // handle delete & edit reservation
+
+    getReservationDetails();
+  }, [res]);
+
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <p className="animate-pulse text-gray-500 text-lg">
+          Loading reservation...
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen  flex flex-col  justify-start items-start gap-5 p-6 bg-gradient-to-br from-gray-100 via-white to-gray-200">
-      {/* retrun button */}
+    <div className="min-h-screen p-6 bg-gradient-to-br from-gray-100 via-white to-gray-200">
+      {/* Back Button */}
       <Link
-        href={"/Home/bookings"}
-        className="p-2.5 transition-all duration-150 cursor-pointer shadow-md hover:-translate-x-2 active:scale-90"
+        href="/Home/bookings"
+        className="inline-flex items-center gap-2 mb-6 px-4 py-2 bg-white shadow hover:shadow-md rounded-xl transition"
       >
-        <ArrowBackIcon className=" text-green-600 " />
+        <ArrowBackIcon />
+        <span>Back</span>
       </Link>
-      {/* specific reservation */}
-      <div className="w-full max-w-xxl bg-white rounded-2xl h-fit  shadow-lg p-6 border border-gray-300 space-y-6">
+
+      {/* Main Card */}
+      <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-xl border border-gray-200 overflow-hidden">
+        
         {/* Header */}
-        <div className="border-b pb-4">
-          <h1 className="text-2xl font-bold text-gray-800">
-            Reservation #{reservationId}
-          </h1>
-          <p className="text-sm text-gray-500">
-            Details about this reservation
-          </p>
+        <div className="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold">
+              Reservation #{res}
+            </h1>
+            <p className="text-sm opacity-90">
+              Reservation details overview
+            </p>
+          </div>
+
+          {/* Status Badge */}
+          <span className="px-4 py-1 bg-white/20 rounded-full text-sm font-semibold">
+            {reservationdetails?.status}
+          </span>
         </div>
 
-        {/* Details */}
-        <div className="grid grid-cols-1 gap-4 text-sm md:grid-cols-2">
-          <div>
-            <p className="text-gray-500">Start Time</p>
-            <p className="font-medium">{reservationdetails?.startTime}</p>
+        {/* Content */}
+        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          {/* Time */}
+          <div className="flex items-start gap-3">
+            <AccessTimeIcon className="text-green-500" />
+            <div>
+              <p className="text-gray-500 text-sm">Time</p>
+              <p className="font-semibold text-lg">
+                {startTime} → {endTime}
+              </p>
+            </div>
           </div>
 
-          <div>
-            <p className="text-gray-500">End Time</p>
-            <p className="font-medium">{reservationdetails?.endTime}</p>
+          {/* Name */}
+          <div className="flex items-start gap-3">
+            <PersonIcon className="text-blue-500" />
+            <div>
+              <p className="text-gray-500 text-sm">Customer</p>
+              <p className="font-semibold">
+                {reservationdetails?.userFullName}
+              </p>
+            </div>
           </div>
 
-          <div>
-            <p className="text-gray-500">State</p>
-            <p className="font-medium text-green-600">
-              {reservationdetails?.status}
-            </p>
+          {/* Email */}
+          <div className="flex items-start gap-3">
+            <EmailIcon className="text-purple-500" />
+            <div>
+              <p className="text-gray-500 text-sm">Email</p>
+              <p className="font-medium">
+                {reservationdetails?.userEmail}
+              </p>
+            </div>
           </div>
 
-          <div>
-            <p className="text-gray-500">user email</p>
-            <p className="font-medium">{reservationdetails?.userEmail}</p>
+          {/* Phone */}
+          <div className="flex items-start gap-3">
+            <PhoneIcon className="text-orange-500" />
+            <div>
+              <p className="text-gray-500 text-sm">Phone</p>
+              <p className="font-medium">
+                {reservationdetails?.userPhoneNumber || "No number"}
+              </p>
+            </div>
           </div>
 
-          <div>
-            <p className="text-gray-500">Name</p>
-            <p className="font-medium">{reservationdetails?.userFullName}</p>
-          </div>
+          {/* Maintenance Note */}
+          {reservationdetails?.maintenanceNote && (
+            <div className="md:col-span-2 bg-yellow-50 border border-yellow-200 p-4 rounded-xl">
+              <p className="text-yellow-700 font-medium text-sm mb-1">
+                Maintenance Note
+              </p>
+              <p className="text-gray-700">
+                {reservationdetails.maintenanceNote}
+              </p>
+            </div>
+          )}
 
-          <div>
-            <p className="text-gray-500">Phone</p>
-            <p className="font-medium">
-              {reservationdetails?.userPhoneNumber}
-            </p>
+          {/* Payment */}
+          <div className="md:col-span-2">
+            <p className="text-gray-500 text-sm">Payment</p>
+            <span className="inline-block mt-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
+              Paid
+            </span>
           </div>
-          <div>
-            <p className="text-gray-500">payment state</p>
-            <p className="font-medium text-green-500">payed</p>
-          </div>
-          {/* Actions */}
-          <div className="flex flex-col md:flex-row gap-4 pt-4 border-t">
-            <button className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-xl transition active:scale-95">
-              Delete
-            </button>
+        </div>
 
-            <button className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-xl transition active:scale-95">
-              Edit
-            </button>
-          </div>
+        {/* Actions */}
+        <div className="flex gap-4 p-6 border-t bg-gray-50">
+          <button className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl font-semibold transition active:scale-95">
+            Delete
+          </button>
+
+          <button className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-xl font-semibold transition active:scale-95">
+            Edit
+          </button>
         </div>
       </div>
     </div>

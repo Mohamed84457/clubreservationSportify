@@ -38,6 +38,7 @@ export default function ReservationComponent({
   ).padStart(2, "0")}`;
 
   const isBooked = status?.toLowerCase() === "confirmed";
+  const iscancelled = status?.toLowerCase() === "cancelled";
 
   return (
     <div
@@ -52,7 +53,7 @@ export default function ReservationComponent({
 
         <span
           className={`px-3 py-1 text-sm rounded-full font-medium ${
-            isBooked ? "bg-green-100 text-green-600" : "bg-red-100 text-red-500"
+            isBooked ? "bg-green-100 text-green-600" : iscancelled ? "bg-red-100 text-red-500" : "bg-gray-100 text-gray-500"
           }`}
         >
           {isBooked ? "Booked" : "maintenance"}
