@@ -24,6 +24,9 @@ interface IRes {
 }
 
 export default function Res({ params }: IRes) {
+   const back_end_url = process.env.NEXT_PUBLIC_BACK_END_URL;
+  const adminreservation_path =
+    process.env.NEXT_PUBLIC_ADMIN_GET_RESERVATION_PATH;
   const [loading, setLoading] = useState(true);
   const { res } = use(params);
 
@@ -56,7 +59,7 @@ export default function Res({ params }: IRes) {
     const getReservationDetails = async () => {
       try {
         const response = await axios.get(
-          `http://m-sportify.runasp.net/api/admin/reservations/${res}`,
+          `${back_end_url}${adminreservation_path}${res}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
