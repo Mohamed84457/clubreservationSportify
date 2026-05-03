@@ -10,7 +10,6 @@ export default function Navigation() {
   const navigation = [
     { label: "Home", directory: "/Home" },
     { label: "Users", directory: "/Home/users" },
-    { label: "Today Bookings", directory: "/Home/bookings/today" },
     { label: "Bookings", directory: "/Home/bookings" },
     { label: "Venues", directory: "/Home/venues" },
   ];

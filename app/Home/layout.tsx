@@ -17,7 +17,7 @@ export default function HomeLayout({
   const Cookie = new Cookies();
   const router = useRouter();
 
-  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(true); //false by default, will be set to true if auth is successful
 
   useEffect(() => {
     const init = async () => {
@@ -35,7 +35,7 @@ export default function HomeLayout({
         try {
           const response = await axios.post(
             `${back_end_url}${refresh_token_path}`,
-            { token: refreshToken }
+            { token: refreshToken },
           );
 
           accessToken = response.data.accessToken;

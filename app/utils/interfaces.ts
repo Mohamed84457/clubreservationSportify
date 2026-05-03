@@ -63,3 +63,11 @@ export interface Ireservationdetails {
   userPhoneNumber: string;
   maintenanceNote: string;
 }
+
+// user interface
+export interface Iuser {
+  id: string;
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+}

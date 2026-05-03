@@ -40,10 +40,7 @@ export default function HeaderLayout() {
       label: "Bookings",
       path: "/Home/bookings",
     },
-    {
-      label: "Bookings today",
-      path: "/Home/bookings/today",
-    },
+    
     {
       label: "venues",
       path: "/Home/venues",
