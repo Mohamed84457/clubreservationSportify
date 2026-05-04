@@ -23,9 +23,9 @@ export function buildSlots(data: ApiResponse): Islot[] {
     if (reservation) {
       if (reservation.status.toLowerCase() === "confirmed") {
         state = Eslotstate.booked;
-      } else {
+      } else if (reservation.status.toLocaleLowerCase() === "maintenance") {
         state = Eslotstate.maintained;
-      }
+      } 
     }
 
     return {
