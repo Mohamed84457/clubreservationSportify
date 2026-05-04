@@ -1,6 +1,6 @@
 "use client";
 
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import HeaderLayout from "../components/headerlayout";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -13,24 +13,28 @@ export default function HomeLayout({
 }) {
   const back_end_url = process.env.NEXT_PUBLIC_BACK_END_URL;
   const refresh_token_path = process.env.NEXT_PUBLIC_REFRESH_TOKEN_PATH;
+  const getmydata_path = process.env.NEXT_PUBLIC_GET_MYDATA_PATH;
 
   const Cookie = new Cookies();
   const router = useRouter();
 
-  const [isAuthorized, setIsAuthorized] = useState(true); //false by default, will be set to true if auth is successful
-
+  const [status, setStatus] = useState<"loading" | "auth" | "unauth">(
+    "loading",
+  );
   useEffect(() => {
     const init = async () => {
-      let accessToken = Cookie.get("sportifyaccesstoken");
-      let refreshToken = Cookie.get("sportifyrefreshtoken");
+      setStatus("loading");
 
-      // ❌ No tokens → redirect
+      let accessToken = Cookie.get("sportifyaccesstoken");
+      const refreshToken = Cookie.get("sportifyrefreshtoken");
+
       if (!accessToken && !refreshToken) {
-        router.replace("/LogIn"); // or "/404"
+        setStatus("unauth");
+        router.replace("/LogIn");
         return;
       }
 
-      // 🔄 Refresh if needed
+      // 🔄 refresh token if needed
       if (!accessToken && refreshToken) {
         try {
           const response = await axios.post(
@@ -39,7 +43,6 @@ export default function HomeLayout({
           );
 
           accessToken = response.data.accessToken;
-          refreshToken = response.data.refreshToken;
 
           Cookie.set("sportifyaccesstoken", accessToken, {
             path: "/",
@@ -47,32 +50,47 @@ export default function HomeLayout({
             secure: process.env.NODE_ENV === "production",
           });
 
-          Cookie.set("sportifyrefreshtoken", refreshToken, {
-            path: "/",
-            sameSite: "lax",
-            secure: process.env.NODE_ENV === "production",
-          });
-        } catch (error) {
-          console.log(error);
+          setStatus("auth");
+        } catch {
+          setStatus("unauth");
           router.replace("/LogIn");
           return;
         }
       }
 
-      // ✅ Authorized
-      setIsAuthorized(true);
+      // 🔍 validate token
+      try {
+        await axios.get(`${back_end_url}${getmydata_path}`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        setStatus("auth");
+      } catch (error: unknown) {
+        const err = error as AxiosError;
+
+        setStatus("unauth");
+
+        if (err.response?.status === 401) {
+          router.replace("/LogIn");
+        }
+      }
     };
 
     init();
   }, []);
 
-  // ⛔ Prevent rendering until auth is done
-  if (!isAuthorized) {
+  if (status === "loading") {
     return (
       <div className="h-screen flex items-center justify-center">
-        <p>Loading...</p>
+        <div className="animate-spin h-10 w-10 border-t-2 border-blue-500 rounded-full" />
       </div>
     );
+  }
+
+  if (status === "unauth") {
+    return null;
   }
 
   return (

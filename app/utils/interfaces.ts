@@ -69,5 +69,9 @@ export interface Iuser {
   id: string;
   fullName: string;
   email: string;
+  isBlocked: boolean;
   phoneNumber: string;
 }
+
+// my data
+export type IMydata = Omit<Iuser, "isBlocked">;

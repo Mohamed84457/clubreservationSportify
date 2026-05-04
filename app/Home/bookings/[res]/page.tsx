@@ -210,13 +210,15 @@ export default function Res({ params }: IRes) {
   return (
     <div className="min-h-screen p-6 bg-gradient-to-br from-gray-100 via-white to-gray-200">
       {/* Back Button */}
-      <Link
-        href="/Home/bookings"
+      <button
+        onClick={() => {
+          router.back();
+        }}
         className="inline-flex items-center gap-2 mb-6 px-4 py-2 bg-white shadow hover:shadow-md rounded-xl transition"
       >
         <ArrowBackIcon />
         <span>Back</span>
-      </Link>
+      </button>
 
       {/* Main Card */}
       <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-xl border border-gray-200 overflow-hidden">
@@ -302,13 +304,16 @@ export default function Res({ params }: IRes) {
           )}
 
           {/* Payment */}
-          {!(reservationdetails?.status.toLocaleLowerCase() == "cancelled" ||
-            reservationdetails?.status.toLocaleLowerCase() ==
-              "maintenance") && (
+          {!(
+            reservationdetails?.status.toLocaleLowerCase() == "cancelled" ||
+            reservationdetails?.status.toLocaleLowerCase() == "maintenance"
+          ) && (
             <div className="md:col-span-2">
               <p className="text-gray-500 text-sm">Payment</p>
               <span className="inline-block mt-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
-                {reservationdetails?.status.toLocaleLowerCase()==="confirmed"?"paid":"pending"}
+                {reservationdetails?.status.toLocaleLowerCase() === "confirmed"
+                  ? "paid"
+                  : "pending"}
               </span>
             </div>
           )}

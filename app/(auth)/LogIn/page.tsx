@@ -92,10 +92,15 @@ export default function LoginPage() {
           sameSite: "lax",
           secure: process.env.NODE_ENV === "production",
         });
-        if (response.data.roleName == "Player") {
-          router.push("website");
-        } else {
-          router.push("Home");
+        switch (response.data.roleName) {
+          case "Player":
+            router.push("/website");
+            break;
+          case "Owner":
+            router.push("/Home");
+            break;
+          default:
+            router.push("/");
         }
       }
     } catch (error) {
@@ -118,6 +123,12 @@ export default function LoginPage() {
           setOpen({
             open: true,
             message,
+            type: "error",
+          });
+        } else {
+          setOpen({
+            open: true,
+            message: "Something went wrong. Please try again.",
             type: "error",
           });
         }

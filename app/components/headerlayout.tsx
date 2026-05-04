@@ -21,7 +21,6 @@ export default function HeaderLayout() {
   const [mineProfileWindowScreenOpen, setMineProfileWindowScreenOpen] =
     useState(false);
 
-    useState(false);
   // pathname to highlight page
   const pathname = usePathname();
   // route
@@ -40,7 +39,7 @@ export default function HeaderLayout() {
       label: "Bookings",
       path: "/Home/bookings",
     },
-    
+
     {
       label: "venues",
       path: "/Home/venues",
@@ -68,11 +67,11 @@ export default function HeaderLayout() {
         <div className=" flex items-center gap-2 cursor-pointer ">
           {/* group-hover:animate-pulse */}
           <Image
-            className=" group-hover:animate-pulse  transition-all duration-200"
-            src="/test.png"
-            alt="logo"
-            width={40}
-            height={40}
+            className=" transition-all duration-150 cursor-pointer active:scale-90 active:translate-y-1 "
+            src="/newicon.png"
+            alt="Website Icon"
+            width={50}
+            height={50}
           />
           <span className="text-xl font-bold text-gray-800">Sportify</span>
         </div>
